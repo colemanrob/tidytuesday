@@ -2,7 +2,7 @@
 title: "2020-08-15-airbender"
 author: "Rob Coleman"
 date: "15/08/2020"
-output: github_markdown
+output: github_document
 ---
 
 
