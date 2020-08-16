@@ -9,6 +9,8 @@ output: github_document
 ```{r}
 library(tidyverse)
 library(tidytuesdayR)
+library(ggthemr)
+library(emo)
 
 tuesdata <- tidytuesdayR::tt_load('2020-08-11')
 
@@ -29,16 +31,28 @@ avatar_avg <- avatar %>%
   group_by(book) %>% 
   summarize(avg_rating = mean(imdb_rating, na.rm = T))
 
+
+
+ggthemr("dust", type = "inner")
+
+
 line_plot <- avatar %>% 
-  ggplot(aes(x = chapter_num, y = imdb_rating, color = book)) +
-  geom_point(show.legend = FALSE) +
-  geom_line() +
-  theme_bw() +
-  labs(title = "Chapters from the Fire book consistently score higher than Earth and Water with few exceptions",
+  mutate(emoji = case_when(
+    book == "Earth" ~ as.character(emo::ji("earth")),
+    book == "Fire" ~ as.character(emo::ji("fire")),
+    book == "Water" ~ as.character(emo::ji("ocean"))
+  )) %>% 
+  ggplot(aes(x = chapter_num, y = imdb_rating, group = book)) +
+  geom_point(aes(color = book)) +
+  geom_line(show.legend = FALSE, alpha = 0.4, aes(color = book)) +
+  scale_size(guide = FALSE) +
+  labs(title = paste("With few exceptions,", emo::ji("fire"),  "has higher scoring chapters than", emo::ji("earth"), "or", emo::ji("ocean")),
        subtitle = "Avatar chapter by IMDB ratings",
        x = "Chapter Number",
        y = "IMDB Rating",
-       color = "Book")
+       color = "Book",
+       shape = "Book")
+
 
 
 ggsave(here::here("viz/avatar_line.png"))
@@ -46,4 +60,10 @@ ggsave(here::here("viz/avatar_line.png"))
 
 
 ```
+
+
+packages used:
+
+- [ggthemr](https://github.com/cttobin/ggthemr#palettes)
+- [emo](https://github.com/hadley/emo)
 
